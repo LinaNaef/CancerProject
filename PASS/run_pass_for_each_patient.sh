@@ -11,34 +11,34 @@ CASE_TYPE=(
 OUT_ROOT="/home/lina/SynologyDrive/TRAL_Masterthesis/IBM/Assembled_genes"
 #GENES_FILE="/ibm/gpfs-dataT/uye/tcga/tcga/colorectal/tmp/colorectal_msi_genes.txt"
 
-for patient in ${ROOT}/*; do
-	case_id=$(basename $patient)
-	echo $case_id
+for patient in "${ROOT}/"*; do
+	case_id=$(basename "$patient")
+	echo "$case_id"
 
     # create a new directory per patient
-	out_case=${OUT_ROOT}/${case_id}
-	mkdir -p $out_case
+	out_case="${OUT_ROOT}/${case_id}"
+	mkdir -p "$out_case"
 
-	for tissue in ${CASE_TYPE[@]}; do
+	for tissue in "${CASE_TYPE[@]}"; do
 		
         # create a new directory per tissue
-		out_case_sample=${out_case}/${tissue}
-		mkdir -p ${out_case_sample}
+		out_case_sample="${out_case}/${tissue}"
+		mkdir -p "${out_case_sample}"
         
         # echo "${CASE_TYPE[@]}"
 
-        for unassembled_gene in ${ROOT}/${case_id}/$tissue/*.fasta; do
+        for unassembled_gene in "${ROOT}/${case_id}/$tissue/"*.fasta; do
 
             # only if fasta file contains sequences pass it to PASS
-            if [ -s $unassembled_gene ]; then
+            if [ -s "$unassembled_gene" ]; then
                 gene=$(basename -s .fasta "$unassembled_gene")
                 echo "$gene"
                 
-                assembled_gene=${out_case_sample}/$gene # filename
-                mkdir -p $assembled_gene
+                assembled_gene="${out_case_sample}/$gene" # filename
+                mkdir -p "$assembled_gene"
                 echo "$assembled_gene"
-                PASS -f $unassembled_gene -b $assembled_gene/"$gene" -m 4 -w 1 -o 1 -r 0.51
-                echo $(cat $assembled_gene/$gene.contig $assembled_gene/$gene.singlets > $assembled_gene.fasta)
+                PASS -f "$unassembled_gene" -b "$assembled_gene/$gene" -m 4 -w 1 -o 1 -r 0.51 # these are just default variables, should be adapted
+                echo $(cat "$assembled_gene/$gene.contig" "$assembled_gene/$gene.singlets" > "$assembled_gene.fasta") # merge singlets and contigs
             fi
 
             # -f  File containing all the peptide reads (required)

@@ -10,7 +10,7 @@ CASE_TYPE=(
 	"solid_tissue_normal"
 )
 OUT_ROOT="/ibm/gpfs-dataT/uye/tcga/tcga/colorectal/extracted_genes"
-GENES_FILE="/ibm/gpfs-dataT/uye/tcga/tcga/colorectal/tmp/colorectal_msi_genes.txt"
+GENES_FILE="/ibm/gpfs-dataT/uye/tcga/tcga/colorectal/tmp/colorectal_msi_genes.txt" # plain text file with genes
 
 for i in ${ROOT}/*; do
 	case_id=$(basename $i)

@@ -1,9 +1,7 @@
 # cd /home/lina/Desktop/tral/easy_setup
 # . activateTRAL.sh
-# cd /home/lina/SynologyDrive/TRAL_Masterthesis/test_TRAL
+# cd /home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/TRAL_Analytics
 # python3
-
-
 
 
 import sys
@@ -13,7 +11,7 @@ import pickle
 # manipulating system path for this session
 # only used if module handlingTRALsequencesTRs.py is not in the sytem path
 
-working_dir = "/home/lina/SynologyDrive/TRAL_Masterthesis/test_TRAL/analysis" # adapt to your own path
+working_dir = "/home/lina/SynologyDrive/TRAL_Masterthesis/test_TRAL" # adapt to your own path
 sys.path.append(working_dir)
 #print('\n'.join(sys.path))
 
@@ -73,14 +71,17 @@ with open(working_dir + 'list_sequences.pkl', 'wb') as f:
 ##########################################################################
 
 # Getting back the objects (later):
-with open(working_dir + 'list_sequences.pkl','rb') as f: # files saved before  
+with open(working_dir + '/analysislist_sequences.pkl','rb') as f: # files saved before  
     list_DNA, list_AA = pickle.load(f)
 
 
-# Creating TR-dicts for all three detectors
+# Creating TR-dicts for detectors detectors
 
-TR_DNA = handlingTRALsequencesTRs.TR_dict_per_detector_per_PAM(list_DNA,3,  ["TRF","T-REKS","TRUST","Phobos","HHrepID"], show_time= True)
-TR_AA = handlingTRALsequencesTRs.TR_dict_per_detector_per_PAM(list_AA,3,  ["TRF","T-REKS","TRUST","Phobos","HHrepID"], show_time= True) # does work for TRUST with 40 but not 80 sequences
+#detectors = ["TRF","T-REKS","TRUST","Phobos","HHrepID"]
+detectors = ["Phobos"]
+
+TR_DNA = handlingTRALsequencesTRs.TR_dict_per_detector_per_PAM(list_DNA,3, detectors, show_time= True)
+TR_AA = handlingTRALsequencesTRs.TR_dict_per_detector_per_PAM(list_AA,3, detectors, show_time= True) # does work for TRUST with 40 but not 80 sequences
 
 # Saving files
 # ATTENTION: change file name if you don't want to overwrite a previous result!!!
@@ -96,6 +97,8 @@ with open(working_dir + 'dict_TR_AA_3seq.pkl', 'wb') as f:
 
 # shows all detected TRs for the defined properties:  
 handlingTRALsequencesTRs.loop_list_TR(TR_DNA["T-REKS"]["120"]["T-REKS_25_4"])
+
+handlingTRALsequencesTRs.loop_list_TR(TR_DNA["Phobos"]["120"]["Phobos_25_4"])
 """
 
 Sample Output:

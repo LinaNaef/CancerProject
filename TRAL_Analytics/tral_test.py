@@ -27,14 +27,16 @@ print(len(tandem_repeats.repeats))
 
 tandem_repeats = sequences_HIV[0].detect(denovo = True, detection = {"detectors": ["HHrepID"]})
 print(len(tandem_repeats.repeats))
-# 0 repeats
+for i in range(len(tandem_repeats.repeats)):
+    print(tandem_repeats.repeats[i])
+# 2 repeats
 
 tandem_repeats = sequences_HIV[0].detect(denovo = True, detection = {"detectors": ["TRF"]})
 print(len(tandem_repeats.repeats))
 # 0 repeats
 
 tandem_repeats = sequences_HIV[0].detect(denovo = True, detection = {"detectors": ["TRUST"]})
-print(len(tandem_repeats.repeats))
+print(len(tandem_repeats.repeats)
 # 0 repeats
 
 
@@ -48,8 +50,8 @@ print(len(tandem_repeats.repeats))
 # Ctrl D
 # python2
 
-import os
-print(os.getcwd())
+# import os
+# print(os.getcwd())
 
 from tral.sequence import sequence
 from tral.paths import PACKAGE_DIRECTORY
