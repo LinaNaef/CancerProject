@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # directory with unassembled genes in fasta (sorted for each patient and each tissue)
-ROOT="/home/lina/SynologyDrive/TRAL_Masterthesis/IBM/Unassembled_genes_fasta"
+ROOT="/home/lina/SynologyDrive/TRAL_Masterthesis/IBM_files/Unassembled_full_copy"
 CASE_TYPE=(
 	"blood_derived_normal"
 	"primary_tumor"
 	"solid_tissue_normal"
 )
 # output directory
-OUT_ROOT="/home/lina/SynologyDrive/TRAL_Masterthesis/IBM/Assembled_genes"
+OUT_ROOT="/home/lina/SynologyDrive/TRAL_Masterthesis/IBM_files/Assembled_genes"
 #GENES_FILE="/ibm/gpfs-dataT/uye/tcga/tcga/colorectal/tmp/colorectal_msi_genes.txt"
 
 for patient in "${ROOT}/"*; do
@@ -37,8 +37,8 @@ for patient in "${ROOT}/"*; do
                 assembled_gene="${out_case_sample}/$gene" # filename
                 mkdir -p "$assembled_gene"
                 echo "$assembled_gene"
-                PASS -f "$unassembled_gene" -b "$assembled_gene/$gene" -m 4 -w 1 -o 1 -r 0.51 # these are just default variables, should be adapted
-                echo $(cat "$assembled_gene/$gene.contig" "$assembled_gene/$gene.singlets" > "$assembled_gene.fasta") # merge singlets and contigs
+                /home/lina/SynologyDrive/TRAL_Masterthesis/programs/pass_v0.3/PASS -f "$unassembled_gene" -b "$assembled_gene/$gene" -m 4 -w 1 -o 1 -r 0.51 # these are just default variables, should be adapted
+                echo $(cat "$assembled_gene/$gene.contigs" "$assembled_gene/$gene.singlets" > "$assembled_gene.fasta") # merge singlets and contigs
             fi
 
             # -f  File containing all the peptide reads (required)

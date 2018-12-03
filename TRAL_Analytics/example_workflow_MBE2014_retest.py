@@ -56,83 +56,83 @@ def sample_MBE_2014_pipeline():
                 path(),
                 i)) for i in TEST_HMM_FILES_MBE_2014]
 
-    # The sequence is searched for tandem repetitions of the Pfam domain in
-    # the sequence
-    test_pfam_list = test_seq.detect(lHMM=test_pfam_hmm)
-    assert len(test_pfam_list.repeats) == 2
+    # # The sequence is searched for tandem repetitions of the Pfam domain in
+    # # the sequence
+    # test_pfam_list = test_seq.detect(lHMM=test_pfam_hmm)
+    # assert len(test_pfam_list.repeats) == 2
 
-    # Pfam TRs with n_effective < 3.5 are discarded.
-    test_pfam_list = test_pfam_list.filter("attribute", "n_effective", "min", 3.5)
-    assert len(test_pfam_list.repeats) == 2
+    # # Pfam TRs with n_effective < 3.5 are discarded.
+    # test_pfam_list = test_pfam_list.filter("attribute", "n_effective", "min", 3.5)
+    # assert len(test_pfam_list.repeats) == 2
 
-    # de novo detection methods (Trust, T-reks, Xstream, HHrepID) are used to search the
-    # INSERT OWN PARAMTERS USING: test_denovo_list = test_seq.detect(denovo =
-    # True, **TEST_DENOVO_PARAMETERS)
-    test_denovo_list = test_seq.detect(denovo=True)
-    # When Trust is part of the detectors, the number of found repeats may
-    # differ between runs...
-    assert len(test_denovo_list.repeats) == 10
+    # # de novo detection methods (Trust, T-reks, Xstream, HHrepID) are used to search the
+    # # INSERT OWN PARAMTERS USING: test_denovo_list = test_seq.detect(denovo =
+    # # True, **TEST_DENOVO_PARAMETERS)
+    # test_denovo_list = test_seq.detect(denovo=True)
+    # # When Trust is part of the detectors, the number of found repeats may
+    # # differ between runs...
+    # assert len(test_denovo_list.repeats) == 10
 
-    # De novo TRs with dTR_units (divergence) > 0.8; n_effective < 2.5; l < 10 or
-    # pvalue "phylo_gap01_ignore_trailing_gaps_and_coherent_deletions" > 0.01
-    # are discarded.
-    test_denovo_list = test_denovo_list.filter(
-        "pvalue",
-        TEST_SCORE_MBE_2014,
-        0.01)
-    assert len(test_denovo_list.repeats) == 10
-    test_denovo_list = test_denovo_list.filter(
-        "divergence",
-        TEST_SCORE_MBE_2014,
-        0.8)
-    assert len(test_denovo_list.repeats) == 10
-    test_denovo_list = test_denovo_list.filter("attribute", "n_effective", "min", 2.5)
-    assert len(test_denovo_list.repeats) == 5
-    test_denovo_list = test_denovo_list.filter("attribute", "l", "min", 10)
-    assert len(test_denovo_list.repeats) == 2
+    # # De novo TRs with dTR_units (divergence) > 0.8; n_effective < 2.5; l < 10 or
+    # # pvalue "phylo_gap01_ignore_trailing_gaps_and_coherent_deletions" > 0.01
+    # # are discarded.
+    # test_denovo_list = test_denovo_list.filter(
+    #     "pvalue",
+    #     TEST_SCORE_MBE_2014,
+    #     0.01)
+    # assert len(test_denovo_list.repeats) == 10
+    # test_denovo_list = test_denovo_list.filter(
+    #     "divergence",
+    #     TEST_SCORE_MBE_2014,
+    #     0.8)
+    # assert len(test_denovo_list.repeats) == 10
+    # test_denovo_list = test_denovo_list.filter("attribute", "n_effective", "min", 2.5)
+    # assert len(test_denovo_list.repeats) == 5
+    # test_denovo_list = test_denovo_list.filter("attribute", "l", "min", 10)
+    # assert len(test_denovo_list.repeats) == 2
 
-    # De novo TRs were remastered with HMM
-    test_denovo_hmm = [
-        hmm.HMM.create(
-            repeat=iTR) for iTR in test_denovo_list.repeats]
-    test_denovo_list_remastered = test_seq.detect(lHMM=test_denovo_hmm)
-    assert len(test_denovo_list_remastered.repeats) == 2
+    # # De novo TRs were remastered with HMM
+    # test_denovo_hmm = [
+    #     hmm.HMM.create(
+    #         repeat=iTR) for iTR in test_denovo_list.repeats]
+    # test_denovo_list_remastered = test_seq.detect(lHMM=test_denovo_hmm)
+    # assert len(test_denovo_list_remastered.repeats) == 2
 
-    # pvalue "phylo_gap01_ignore_trailing_gaps_and_coherent_deletions" > 0.1
-    # are discarded.
-    test_denovo_list_remastered = test_denovo_list_remastered.filter(
-        "pvalue",
-        TEST_SCORE_MBE_2014,
-        0.1)
+    # # pvalue "phylo_gap01_ignore_trailing_gaps_and_coherent_deletions" > 0.1
+    # # are discarded.
+    # test_denovo_list_remastered = test_denovo_list_remastered.filter(
+    #     "pvalue",
+    #     TEST_SCORE_MBE_2014,
+    #     0.1)
 
-    # De novo TRs were filtered (n_effective < 3.5 are discarded.)
-    test_denovo_list_remastered = test_denovo_list_remastered.filter(
-        "attribute",
-        "n_effective",
-        "min",
-        3.5)
-    assert len(test_denovo_list_remastered.repeats) == 2
+    # # De novo TRs were filtered (n_effective < 3.5 are discarded.)
+    # test_denovo_list_remastered = test_denovo_list_remastered.filter(
+    #     "attribute",
+    #     "n_effective",
+    #     "min",
+    #     3.5)
+    # assert len(test_denovo_list_remastered.repeats) == 2
 
-    # De novo TRs overlapping with a Pfam TR were filtered
-    test_denovo_list_remastered = test_denovo_list_remastered.filter(
-        "none_overlapping_fixed_repeats",
-        test_pfam_list,
-        "shared_char")
-    assert len(test_denovo_list_remastered.repeats) == 2
+    # # De novo TRs overlapping with a Pfam TR were filtered
+    # test_denovo_list_remastered = test_denovo_list_remastered.filter(
+    #     "none_overlapping_fixed_repeats",
+    #     test_pfam_list,
+    #     "shared_char")
+    # assert len(test_denovo_list_remastered.repeats) == 2
 
-    # Remaining De novo TRs were clustered for overlap (common ancestry). Only best =
-    # lowest p-Value and lowest divergence were retained.
-    test_denovo_list_remastered = test_denovo_list_remastered.filter(
-        "none_overlapping", ["common_ancestry"], {
-            "pvalue": TEST_SCORE_MBE_2014, "divergence": TEST_SCORE_MBE_2014})
-    assert len(test_denovo_list_remastered.repeats) == 1
+    # # Remaining De novo TRs were clustered for overlap (common ancestry). Only best =
+    # # lowest p-Value and lowest divergence were retained.
+    # test_denovo_list_remastered = test_denovo_list_remastered.filter(
+    #     "none_overlapping", ["common_ancestry"], {
+    #         "pvalue": TEST_SCORE_MBE_2014, "divergence": TEST_SCORE_MBE_2014})
+    # assert len(test_denovo_list_remastered.repeats) == 1
 
-    # Merge remaining set of de novo and Pfam TRs.
-    test_entire_set = test_pfam_list + test_denovo_list_remastered
-    assert len(test_entire_set.repeats) == 3
+    # # Merge remaining set of de novo and Pfam TRs.
+    # test_entire_set = test_pfam_list + test_denovo_list_remastered
+    # assert len(test_entire_set.repeats) == 3
 
-    # Write result set of Pfam TRs
-    #test_entire_set.write(format = "tsv,...")
+    # # Write result set of Pfam TRs
+    # #test_entire_set.write(format = "tsv,...")
 
 
 if __name__ == "__main__":

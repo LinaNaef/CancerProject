@@ -1,4 +1,5 @@
 ##########################################################################
+
 ### Importing required modules
 ##########################################################################
 
@@ -25,62 +26,52 @@ tissues = ["blood_derived_normal","primary_tumor","solid_tissue_normal"]
 genes_list = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/Prepare_PASS/colorectal_msi_genes.txt"
 with open(genes_list) as g:
     genes = g.readlines()
-genes = [x.strip() for x in genes]
+# genes = [x.strip() for x in genes]
 # or define list with only few genes:
-# genes = ["APC","MLH1"]
+genes = ["APC","MLH1"]
 
 ##########################################################################
 ### Iteration through files
 ##########################################################################
-# get_sequences(sequences_path)
-def get_sequences(sequences_path,show_time=False):
-    
-    """ returns a dictionary with detected TRs
-            key in form: [l_n]
-    
-    
-    Args:
-        sequences_path (str) 
-        """
-     
+# iterate_patients(sequences_path)
+def iterate_patients(sequences_path,show_time=False):
     start = time.time()
-    sequences_per_TR_type = dict()
+    sequences = dict()
 
     for patient in os.listdir(sequences_path):
         patient_path = os.path.join(sequences_path, patient)
+        print("patient_path",patient_path)
         for tissue in os.listdir(patient_path):
             tissue_path = os.path.join(patient_path, tissue)
             for gene in genes:
-                print(gene)
-                sequence_file = os.path.join(tissue_path, gene + ".fasta")
-                print(sequence_file)
-                    
+                sequences[patient][tissue][gene] = get_sequences(tissue_path,gene)
 
+            print("Got sequences from tissue {} and patient {}".format(patient, tissue))
 
-                # if sequence_file.endswith(".fasta"): 
-                #     print(tissue_path)
-                # else:
-                #     continue
+        print("Got sequences from {}".format(patient))
+    end = time.time()  
+    if show_time:
+        print("Function get_sequences() took",end - start,"seconds")  
 
-
+def get_sequences(tissue_path,gene):
+        print(gene)
+        sequence_file = os.path.join(tissue_path, gene + ".fasta")
+        print(sequence_file)
+        try:
+            sequences_gene = "Test {} in {}.".format(gene,tissue_path)
+            # sequences_gene = sequence.Sequence.create(file = sequence_file, input_format = 'fasta')  
+        except FileNotFoundError:
+            print("Did not found {} in {}.".format(gene,tissue_path))
+            sequences_gene = "Did not found {} in {}.".format(gene,tissue_path)
+        except:
+            print("Unexpected Error while trying to get the sequence from {}.".format(sequence_file))
+            sequences_gene = "Unexpected Error while trying to get the sequence from {}.".format(sequence_file)
+        return sequences_gene
     
-    # for patient in list_l:
-        
-    #     for n in list_n:
-            
-    #         TR_type = "_".join([str(l),str(n)])
-    #         filename = TR_type + ".faa"
-    #         path = os.path.join(directory_in_str, filename)
-    #         sequences = sequence.Sequence.create(file = path, input_format = 'fasta')
-    #         sequences_per_TR_type[TR_type] = sequences
-    #         print("Got sequences from TR_type",TR_type)
-            
-    # end = time.time()   
-    
-    # if show_time:
-    #     print("Function get_sequences_in_directory_per_TR_type() took",end - start,"seconds")  
+
         
     # return sequences_per_TR_type
+
 
 
 
