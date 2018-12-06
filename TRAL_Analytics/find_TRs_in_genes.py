@@ -36,48 +36,76 @@ patients = [ patient for patient in os.listdir(sequences_path)]
 ### Iteration through files
 ##########################################################################
 
-# sequences["primary_tumor"]["Pat1"]
-# sequences["blood_derived_normal"]["Pat14"]
-# sequences["solid_tissue_normal"]["Pat43"]
+# sequences_per_gene = sequences_per_gene(genes, sequences_path)
+# sequences_per_gene["MLH1"]["primary_tumor"]["Pat29"]
+# sequences_per_gene["APC"]["primary_tumor"]["Pat29"]
 
-# create one dictionary per gene
-for gene in genes:
-    # gene name gives dictionary of all patients for all tissues
-    sequences = iterate_patients(sequences_path, gene)
-    # vars()[gene] = iterate_patients(sequences_path, gene)
-    # print(gene)
-gene = "APC"
-sequences = iterate_patients(sequences_path, gene)
+def sequences_per_gene(genes, sequences_path, show_time=False):
+    
+    """ returns a dictionary of sequences for each gene in the input list
+            sequences_per_gene[gene][tissue][patient]
 
-def iterate_patients(sequences_path, gene, show_time=False):
+    Args:
+        genes (list): defines for which genes the sequences should be taken
+        sequences_path (string) """
     start = time.time()
+# create one dictionary per gene
+    sequences_per_gene = {}
+    for gene in genes:
+        # gene name gives dictionary of all patients for all tissues
+        sequences = iterate_patients(sequences_path, gene)
+        sequences_per_gene.update({gene:sequences})
+    
+    end = time.time()  
+    if show_time:
+        print("It took {} seconds to get the sequences of gene {}.".format(end - start, gene))
+    
+    return(sequences_per_gene)
+
+
+def iterate_patients(sequences_path, gene):
+
+    """ returns a dictionary of sequences the gene in the input list
+            sequences[tissue][patient]
+
+    Args:
+        gene (string)
+        sequences_path (string) """
+
+    
 
     # initialize dictionary for tissues
     sequences = {tissue: {patient: None for patient in patients} for tissue in tissues}
 
     for patient in patients:
         for tissue in tissues:
-            tissue_path = os.path.join(sequences_path, tissue, patient)
-            sequences[tissue][patient] = get_sequences(tissue_path, gene)
-
-            print("Got sequences from tissue {} and patient {}".format(tissue, patient))
-
-    end = time.time()  
-    if show_time:
-        print("Function get_sequences() took", end - start,"seconds")
+            tissue_path = os.path.join(sequences_path, patient, tissue)
+            try:
+                sequences[tissue][patient] = get_sequences(tissue_path, gene)
+                print("Got sequences from tissue {} and patient {}".format(tissue, patient))
+            except:
+                print("Unexpected Error while trying to call get_sequences({}, {}) .".format(tissue_path, gene))
+                exit
     
     return sequences
 
-def get_sequences(tissue_path,gene):
+
+def get_sequences(tissue_path, gene):
+
+    """ returns TRAL sequences from a tissue
+
+    Args:
+        gene (string)
+        tissue_path (string) """
+      
     sequence_file = os.path.join(tissue_path, gene + ".fasta")
     try:
-        sequences_gene = "Test {} in {}.".format(gene,sequence_file)
-        # sequences_gene = sequence.Sequence.create(file = sequence_file, input_format = 'fasta')
+        sequences_gene = sequence.Sequence.create(file = sequence_file, input_format = 'fasta')
     except FileNotFoundError:
         print("Did not found {} in {}.".format(gene,tissue_path))
         sequences_gene = "Did not found {} in {}.".format(gene,tissue_path)
     except:
         print("Unexpected Error while trying to get the sequence from {}.".format(sequence_file))
         sequences_gene = "Unexpected Error while trying to get the sequence from {}.".format(sequence_file)
-    print("sequences_gene", sequences_gene)
+    # print("sequences_gene", sequences_gene)
     return sequences_gene

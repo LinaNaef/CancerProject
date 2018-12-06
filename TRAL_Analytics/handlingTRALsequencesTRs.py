@@ -114,7 +114,7 @@ def TR_per_sequence(sequences_per_TR_type,detector,number_sequences,show_time=Fa
 
 def get_sequences_in_directory_per_TR_type(directory_in_str,list_l,list_n,show_time=False):
     
-    """ returns a dictionary with detected TRs
+    """ returns a dictionary with sequences
             key in form: [l_n]
     
     
