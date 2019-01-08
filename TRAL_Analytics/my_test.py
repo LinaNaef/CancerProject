@@ -27,17 +27,41 @@ from tral.hmm import hmm
 logging.config.fileConfig(config_file("logging.ini"))
 log = logging.getLogger('root')
 
-# ## AA reference
-working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/pickles"
-sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data"
-output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output"
+seq_type = "AA" # change sequence type in config file as well!!
 
-## DNA reference
-#working_directory = "/home/lina/Desktop/TRAL_Masterthesis/references/NCBI/pickles"
-#sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/NCBI"
+if seq_type == "AA":
+    ## AA reference
+    working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/pickles"
+    sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data"
+    output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/AA"
+    detectors = ["XSTREAM","HHrepID","T-REKS","TRUST"] # AA compatible detectors
 
-# genes = ["APC", "CDKL1", "TGFBR2","TP53I3","TP53I11"]
-genes = ["APC"]
+    # Thresholds for filtering
+    pvalue_threshold = 0.05
+    divergence_threshold = 0.8
+    n_threshold = 2.5 # minimun repeat unit count
+    l_threshold = 3 # maximum repeat unit length
+
+elif seq_type == "DNA":
+    # Since TRAL is not ready to calculate the pvalue for DNA, I cannot longer focus on this part
+
+    ## DNA reference
+    working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/NCBI/pickles"
+    sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/NCBI"
+    output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/DNA"
+    detectors = ["T-REKS", "TRF", "XSTREAM"] # DNA compatible detectors (without TRED and Phobos)
+
+    # Thresholds for filtering
+    pvalue_threshold = 0.01
+    divergence_threshold = 0.8
+    n_threshold = 2.5 # minimun repeat unit count
+    l_threshold = 5 # maximum repeat unit length
+
+else:
+    print("This sequence type does not exist.")
+
+genes = ["APC", "CDKL1", "TGFBR2", "TP53I3", "TP53I11", "HTT"]
+# genes = ["TGFBR2"]
 
 # define this as in the config
 CONFIG_GENERAL = configuration.Configuration.instance().config
@@ -76,9 +100,6 @@ for gene in genes:
     ##########################################################################
     ######### Getting TRs
 
-    detectors_AA = ["XSTREAM","HHrepID","T-REKS","TRUST"] # AA compatible detectors
-    # detectors_DNA = ["T-REKS", "TRF", "XSTREAM"] # DNA compatible detectors (without TRED and Phobos)
-
     TRs_pkl = os.path.join(working_dir, "TRs_raw", gene + "_TRs.pkl")
 
     if os.path.exists(TRs_pkl):
@@ -103,35 +124,34 @@ for gene in genes:
         with open(output_pickle_file,'rb') as f: 
             denovo_list_remastered = pickle.load(f)
     else:
-
-        ## filtering for pvalue
-        # denovo_list = denovo_list.filter(
-        #     "pvalue",
-        #     score,
-        #     0.01)
+        # filtering for pvalue
+        denovo_list = denovo_list.filter(
+            "pvalue",
+            score,
+            pvalue_threshold)
         # print("Repeats after filtering for pvalue 0.01:", len(denovo_list.repeats))
 
-        # ## filtering for divergence
-        # denovo_list = denovo_list.filter(
-        #     "divergence",
-        #     score,
-        #     0.8)
+        ## filtering for divergence
+        denovo_list = denovo_list.filter(
+            "divergence",
+            score,
+            divergence_threshold)
         # print("Repeats after filtering for divergence 0.8:", len(denovo_list.repeats))
 
-        # ## filtering for number of repeat units
-        # denovo_list = denovo_list.filter(
-        #     "attribute", 
-        #     "n_effective", 
-        #     "min", 
-        #     2.5)
+        ## filtering for number of repeat units
+        denovo_list = denovo_list.filter(
+            "attribute", 
+            "n_effective", 
+            "min", 
+            n_threshold)
         # print("Repeats after filtering for min 2.5 repeat units:", len(denovo_list.repeats))
 
-        # ## filtering for length of repeat units
-        # denovo_list = denovo_list.filter(
-        #     "attribute", 
-        #     "l_effective", 
-        #     "max", 
-        #     3)
+        ## filtering for length of repeat units
+        denovo_list = denovo_list.filter(
+            "attribute", 
+            "l_effective", 
+            "max", 
+            l_threshold)
         # print("Repeats after filtering for a length of at least 10:", len(denovo_list.repeats))
 
         ##########################################################################
@@ -159,8 +179,8 @@ for gene in genes:
         # function to save as fasta has to be integrated
 
     print("\n***", gene, "***")
-    print("denovo Repeats:", len(denovo_list.repeats))
-    print("Repeats after filtering and clustering:", len(denovo_list_remastered.repeats))
+    print("denovo repeats:", len(denovo_list.repeats))
+    print("repeats after filtering and clustering:", len(denovo_list_remastered.repeats))
 
     for i in range(len(denovo_list_remastered.repeats)):
         print(denovo_list_remastered.repeats[i])
