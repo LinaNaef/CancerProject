@@ -73,79 +73,94 @@ for gene in genes:
         with open(sequence_pkl, 'wb') as f: 
             pickle.dump(sequence, f)
 
-    # sequences = get_sequences.sequences_per_gene(genes, sequences_path, show_time=False, as_pickle=False, patient=False)
-
     ##########################################################################
     ######### Getting TRs
 
     detectors_AA = ["XSTREAM","HHrepID","T-REKS","TRUST"] # AA compatible detectors
-    detectors_DNA = ["T-REKS", "TRF", "XSTREAM"] # DNA compatible detectors (without TRED and Phobos)
+    # detectors_DNA = ["T-REKS", "TRF", "XSTREAM"] # DNA compatible detectors (without TRED and Phobos)
 
-    # de novo detection methods (Trust, T-reks, Xstream, HHrepID) are used to search the
-    # INSERT OWN PARAMTERS USING: test_denovo_list = test_seq.detect(denovo =
-    # True, **TEST_DENOVO_PARAMETERS)
+    TRs_pkl = os.path.join(working_dir, "TRs_raw", gene + "_TRs.pkl")
 
-    # test_denovo_list = test_seq.detect(denovo=True)
-    # # Saving this TRs as binary files:
-    # with open(working_dir + '/denovo_list.pkl', 'wb') as f: 
-    #     pickle.dump(test_denovo_list, f)
+    if os.path.exists(TRs_pkl):
+        # Getting back the sequences:
+        with open(TRs_pkl,'rb') as f: # files saved before  
+            denovo_list = pickle.load(f)
+    else:
+        denovo_list = sequence.detect(denovo=True)
+        # Saving this sequences as binary files:
+        with open(TRs_pkl, 'wb') as f: 
+            pickle.dump(denovo_list, f)
 
-    # Getting back the TRs:
-    with open(working_dir + '/denovo_list.pkl','rb') as f: # files saved before  
-        test_denovo_list = pickle.load(f)
-
-    # When Trust is part of the detectors, the number of found repeats may
-    # differ between runs...
-    print("Found repeats:", len(test_denovo_list.repeats))
+    # print("Found", len(denovo_list.repeats), "denovo repeats in", gene)
 
     ##########################################################################
-
-    test_denovo_list = test_denovo_list.filter(
-        "pvalue",
-        score,
-        0.01)
-    print("Repeats after filtering for pvalue 0.01:", len(test_denovo_list.repeats))
-    test_denovo_list = test_denovo_list.filter(
-        "divergence",
-        score,
-        0.8)
-    print("Repeats after filtering for divergence 0.8:", len(test_denovo_list.repeats))
-    test_denovo_list = test_denovo_list.filter("attribute", "n_effective", "min", 2.5)
-    print("Repeats after filtering for min 2.5 repeat units:", len(test_denovo_list.repeats))
-    test_denovo_list = test_denovo_list.filter("attribute", "l_effective", "max", 3) # here an exception would be raise if the attribute is l
-    print("Repeats after filtering for a length of at least 10:", len(test_denovo_list.repeats))
-    # for i in range(len(test_denovo_list.repeats)):
-    # 	print(test_denovo_list.repeats[i])
-
-
-    ##########################################################################
-    #########  Building HMM with hmmbuild
-
-    # # De novo TRs were remastered with HMM
-    test_denovo_hmm = [hmm.HMM.create(input_format = 'repeat', repeat=iTR) for iTR in test_denovo_list.repeats] # only possible with hmmbuild
-    test_denovo_list_remastered = test_seq.detect(lHMM=test_denovo_hmm)
-
-    ##########################################################################
-    ######### Clustering
-
-
-    # De novo TRs were clustered for overlap (common ancestry). Only best =
-    # lowest p-Value and lowest divergence were retained.
-    test_denovo_list = test_denovo_list.filter(
-        "none_overlapping", ["common_ancestry"], {
-            "pvalue": score, "divergence": score})
-    print("Repeats after clustering:", len(test_denovo_list.repeats))
-
-
-    ##########################################################################
-    ######### Save Tandem Repeats
-
+    ######### Filtering TRs
 
     output_pickle_file = os.path.join(output_path, gene + ".pkl")
-    test_denovo_list.write(output_format = "pickle", file = output_pickle_file)
-
-
     output_tsv_file = os.path.join(output_path, gene + ".tsv")
-    test_denovo_list.write(output_format = "tsv", file = output_tsv_file)
 
-    # function to save as fasta has to be integrated
+    if os.path.exists(output_pickle_file) and os.path.exists(output_tsv_file):
+        with open(output_pickle_file,'rb') as f: 
+            denovo_list_remastered = pickle.load(f)
+    else:
+
+        ## filtering for pvalue
+        # denovo_list = denovo_list.filter(
+        #     "pvalue",
+        #     score,
+        #     0.01)
+        # print("Repeats after filtering for pvalue 0.01:", len(denovo_list.repeats))
+
+        # ## filtering for divergence
+        # denovo_list = denovo_list.filter(
+        #     "divergence",
+        #     score,
+        #     0.8)
+        # print("Repeats after filtering for divergence 0.8:", len(denovo_list.repeats))
+
+        # ## filtering for number of repeat units
+        # denovo_list = denovo_list.filter(
+        #     "attribute", 
+        #     "n_effective", 
+        #     "min", 
+        #     2.5)
+        # print("Repeats after filtering for min 2.5 repeat units:", len(denovo_list.repeats))
+
+        # ## filtering for length of repeat units
+        # denovo_list = denovo_list.filter(
+        #     "attribute", 
+        #     "l_effective", 
+        #     "max", 
+        #     3)
+        # print("Repeats after filtering for a length of at least 10:", len(denovo_list.repeats))
+
+        ##########################################################################
+        #########  Building HMM with hmmbuild
+
+        # # De novo TRs were remastered with HMM
+        denovo_hmm = [hmm.HMM.create(input_format = 'repeat', repeat=iTR) for iTR in denovo_list.repeats] # only possible with hmmbuild
+        denovo_list_remastered = sequence.detect(lHMM=denovo_hmm)
+
+        ##########################################################################
+        ######### Clustering
+
+        # De novo TRs were clustered for overlap (common ancestry). Only best =
+        # lowest p-Value and lowest divergence were retained.
+        denovo_list_remastered = denovo_list.filter(
+            "none_overlapping", ["common_ancestry"], {
+                "pvalue": score, "divergence": score})
+
+        ##########################################################################
+        ######### Save Tandem Repeats
+
+        denovo_list_remastered.write(output_format = "pickle", file = output_pickle_file)
+        denovo_list_remastered.write(output_format = "tsv", file = output_tsv_file)
+
+        # function to save as fasta has to be integrated
+
+    print("\n***", gene, "***")
+    print("denovo Repeats:", len(denovo_list.repeats))
+    print("Repeats after filtering and clustering:", len(denovo_list_remastered.repeats))
+
+    for i in range(len(denovo_list_remastered.repeats)):
+        print(denovo_list_remastered.repeats[i])
