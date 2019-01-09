@@ -43,7 +43,8 @@ divergence_threshold = 0.8
 n_threshold = 2.5 # minimun repeat unit count
 l_threshold = 3 # maximum repeat unit length
 
-set_file = "AUP000005640_Mitochondrion.fasta"
+# set_file = "AUP000005640_Mitochondrion.fasta"
+set_file = "AUP000005640_Chromosome21.fasta"
 set_name = set_file.split(".fasta")[0]
 sequences_file = os.path.join(sequences_path, set_file)
 result_dir = os.path.join(output_path, set_name)
@@ -113,14 +114,12 @@ for pyfaidx in proteins:
             "pvalue",
             score,
             pvalue_threshold)
-        # print("Repeats after filtering for pvalue 0.01:", len(denovo_list.repeats))
 
         ## filtering for divergence
         denovo_list = denovo_list.filter(
             "divergence",
             score,
             divergence_threshold)
-        # print("Repeats after filtering for divergence 0.8:", len(denovo_list.repeats))
 
         ## filtering for number of repeat units
         denovo_list = denovo_list.filter(
@@ -128,7 +127,6 @@ for pyfaidx in proteins:
             "n_effective", 
             "min", 
             n_threshold)
-        # print("Repeats after filtering for min 2.5 repeat units:", len(denovo_list.repeats))
 
         ## filtering for length of repeat units
         denovo_list = denovo_list.filter(
@@ -136,7 +134,6 @@ for pyfaidx in proteins:
             "l_effective", 
             "max", 
             l_threshold)
-        # print("Repeats after filtering for a length of at least 10:", len(denovo_list.repeats))
 
         ##########################################################################
         #########  Building HMM with hmmbuild
