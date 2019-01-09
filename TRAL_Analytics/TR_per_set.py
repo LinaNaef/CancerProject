@@ -1,5 +1,4 @@
 import sys
-# sys.path.append('/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/TRAL_Analytics') 
 
 ##########################################################################
 ### Importing required modules
@@ -11,8 +10,7 @@ import pickle
 # # modules in this folder
 import get_sequences
 import find_TRs_in_genes
-import pyfaidx
-
+from pyfaidx import Fasta
 
 import logging
 import logging.config
@@ -20,48 +18,11 @@ import os
 
 from tral.paths import config_file, PACKAGE_DIRECTORY
 from tral import configuration
-
 from tral.sequence import sequence
 from tral.hmm import hmm
 
 logging.config.fileConfig(config_file("logging.ini"))
 log = logging.getLogger('root')
-
-seq_type = "AA" # change sequence type in config file as well!!
-
-if seq_type == "AA":
-    ## AA reference
-    working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/pickles"
-    sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data"
-    output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/AA"
-    detectors = ["XSTREAM","HHrepID","T-REKS","TRUST"] # AA compatible detectors
-
-    # Thresholds for filtering
-    pvalue_threshold = 0.05
-    divergence_threshold = 0.8
-    n_threshold = 2.5 # minimun repeat unit count
-    l_threshold = 3 # maximum repeat unit length
-
-elif seq_type == "DNA":
-    # Since TRAL is not ready to calculate the pvalue for DNA, I cannot longer focus on this part
-
-    ## DNA reference
-    working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/NCBI/pickles"
-    sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/NCBI"
-    output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/DNA"
-    detectors = ["T-REKS", "TRF", "XSTREAM"] # DNA compatible detectors (without TRED and Phobos)
-
-    # Thresholds for filtering
-    pvalue_threshold = 0.01
-    divergence_threshold = 0.8
-    n_threshold = 2.5 # minimun repeat unit count
-    l_threshold = 5 # maximum repeat unit length
-
-else:
-    print("This sequence type does not exist.")
-
-genes = ["APC", "CDKL1", "TGFBR2", "TP53I3", "TP53I11", "HTT"]
-# genes = ["TGFBR2"]
 
 # define this as in the config
 CONFIG_GENERAL = configuration.Configuration.instance().config
@@ -69,56 +30,79 @@ CONFIG = CONFIG_GENERAL["repeat_list"]
 score = CONFIG["model"]
 
 ##########################################################################
-######### Getting sequences
+######### Defining Paths and Parameters
 
-####### Set of proteins (maybe better version)
-# to get the sequences from one file (different proteins with one sequence per file)
-# l_sequence = Fasta(sequences_file)
-# for iS_pyfaidx in l_sequence:
-#     iS = sequence.Sequence(seq=str(iS_pyfaidx), name=iS_pyfaidx.name.split("|")[1]) # name is protein identifier
+## AA reference
+working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom/pickles"
+sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom"
+output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/proteom"
 
-# with this method we obtain the sequences differently
+# Thresholds for filtering
+pvalue_threshold = 0.05
+divergence_threshold = 0.8
+n_threshold = 2.5 # minimun repeat unit count
+l_threshold = 3 # maximum repeat unit length
+
+set_file = "AUP000005640_Mitochondrion.fasta"
+set_name = set_file.split(".fasta")[0]
+sequences_file = os.path.join(sequences_path, set_file)
+result_dir = os.path.join(output_path, set_name)
+try:
+    if not os.path.isdir(result_dir):
+        os.makedirs(result_dir)
+except:
+    raise Exception(
+        "Could not create path to result directory: {}".format(
+            os.path.dirname(result_dir)))
+
 
 ##########################################################################
-######### used for only single sequences per fasta file (one protein per file!)
-for gene in genes:
-    ####### Some single proteins (own function to get sequence used)
-    # to get the sequences from different files (file per protein)
+######### Getting sequences
 
-    sequence_pkl = os.path.join(working_dir, gene + "_sequences.pkl")
+## obtaining sequences from fasta format
+## Pyfaix Documentation (https://pythonhosted.org/pyfaidx/#installation)
+proteins = Fasta(sequences_file)
+# print(proteins.keys())
+# proteins['sp|P03886|NU1M_HUMAN'][:].seq
+
+for pyfaidx in proteins:
+    seq_name = pyfaidx.name.split("|")[1]
+    sequence_pkl = os.path.join(working_dir, seq_name + "_sequence.pkl")
 
     if os.path.exists(sequence_pkl):
         # Getting back the sequences:
         with open(sequence_pkl,'rb') as f: # files saved before  
-            sequence = pickle.load(f)
+            seq = pickle.load(f)
     else:
-        sequence = get_sequences.get_sequences(sequences_path, gene)[0]
+        seq = sequence.Sequence(seq=str(pyfaidx), name=seq_name) # name is protein identifier
         # Saving this sequences as binary files:
         with open(sequence_pkl, 'wb') as f: 
-            pickle.dump(sequence, f)
+            pickle.dump(seq, f)
 
+    log.debug("Work on sequence {}".format(seq_name))
     ##########################################################################
     ######### Getting TRs
 
-    TRs_pkl = os.path.join(working_dir, "TRs_raw", gene + "_TRs.pkl")
+    TRs_pkl = os.path.join(working_dir, "TRs_raw", seq_name + "_TRs.pkl")
 
     if os.path.exists(TRs_pkl):
         # Getting back the sequences:
         with open(TRs_pkl,'rb') as f: # files saved before  
             denovo_list = pickle.load(f)
     else:
-        denovo_list = sequence.detect(denovo=True)
+        denovo_list = seq.detect(denovo=True)
         # Saving this sequences as binary files:
         with open(TRs_pkl, 'wb') as f: 
             pickle.dump(denovo_list, f)
 
-    # print("Found", len(denovo_list.repeats), "denovo repeats in", gene)
+    # print("Found", len(denovo_list.repeats), "denovo repeats in", seq_name)
 
     ##########################################################################
     ######### Filtering TRs
 
-    output_pickle_file = os.path.join(output_path, gene + ".pkl")
-    output_tsv_file = os.path.join(output_path, gene + ".tsv")
+
+    output_pickle_file = os.path.join(result_dir, seq_name + ".pkl")
+    output_tsv_file = os.path.join(result_dir, seq_name + ".tsv")
 
     if os.path.exists(output_pickle_file) and os.path.exists(output_tsv_file):
         with open(output_pickle_file,'rb') as f: 
@@ -159,7 +143,7 @@ for gene in genes:
 
         # # De novo TRs were remastered with HMM
         denovo_hmm = [hmm.HMM.create(input_format = 'repeat', repeat=iTR) for iTR in denovo_list.repeats] # only possible with hmmbuild
-        denovo_list_remastered = sequence.detect(lHMM=denovo_hmm)
+        denovo_list_remastered = seq.detect(lHMM=denovo_hmm)
 
         ##########################################################################
         ######### Clustering
@@ -178,7 +162,7 @@ for gene in genes:
 
         # function to save as fasta has to be integrated
 
-    print("\n***", gene, "***")
+    print("\n***", seq_name, "***")
     print("denovo repeats:", len(denovo_list.repeats))
     print("repeats after filtering and clustering:", len(denovo_list_remastered.repeats))
 

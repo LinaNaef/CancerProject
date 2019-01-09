@@ -1,5 +1,4 @@
 import sys
-# sys.path.append('/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/TRAL_Analytics') 
 
 ##########################################################################
 ### Importing required modules
