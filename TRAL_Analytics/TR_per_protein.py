@@ -1,21 +1,17 @@
-import sys
-
 ##########################################################################
 ### Importing required modules
 ##########################################################################
 
+import sys
 import os
 import pickle
 
-# # modules in this folder
 import get_sequences
 import find_TRs_in_genes
 import pyfaidx
 
-
 import logging
 import logging.config
-import os
 
 from tral.paths import config_file, PACKAGE_DIRECTORY
 from tral import configuration
@@ -70,16 +66,8 @@ score = CONFIG["model"]
 ##########################################################################
 ######### Getting sequences
 
-####### Set of proteins (maybe better version)
-# to get the sequences from one file (different proteins with one sequence per file)
-# l_sequence = Fasta(sequences_file)
-# for iS_pyfaidx in l_sequence:
-#     iS = sequence.Sequence(seq=str(iS_pyfaidx), name=iS_pyfaidx.name.split("|")[1]) # name is protein identifier
+# used for only single sequences per fasta file (one protein per file!)
 
-# with this method we obtain the sequences differently
-
-##########################################################################
-######### used for only single sequences per fasta file (one protein per file!)
 for gene in genes:
     ####### Some single proteins (own function to get sequence used)
     # to get the sequences from different files (file per protein)

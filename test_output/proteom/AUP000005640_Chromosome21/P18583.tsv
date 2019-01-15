@@ -1,5 +1,2 @@
 begin	msa_original	l_effective	n_effective	repeat_region_length	divergence	pvalue
 117	K,K,K,K,K,K,K	1	7.0	7	1e-10	0.0
-1249	PE,PP,PE,PE	2	4.0	8	0.23602294927154538	0.0
-1922	-SRTP,-SRR-,-SRS-,HTPS-,-RR--,-RRS-	3	5.666666666666667	19	0.556640625	0.0020999999999999908
-1858	RSQT,RS--,RS--,RSR-,RRR-,RSS-,RS--,RSK-	3	7.0	22	0.41668701173541256	0.0

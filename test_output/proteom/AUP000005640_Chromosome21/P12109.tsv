@@ -1,4 +1,1 @@
 begin	msa_original	l_effective	n_effective	repeat_region_length	divergence	pvalue
-575	GPE,GPQ,GPP,GHQ,GPP,GPD	3	6.0	18	0.6065673828125	0.0
-391	SGD,EGQ,PGE,PGP,PGE,KGE	3	6.0	18	0.67919921875	0.0
-278	-GEK,-GEA,-GD-,PGR-,PGD-	2	5.0	14	0.779571533203125	0.00029999999999996696

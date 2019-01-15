@@ -1,9 +1,8 @@
-import sys
-
 ##########################################################################
 ### Importing required modules
 ##########################################################################
 
+import sys
 import os
 import pickle
 
@@ -11,7 +10,6 @@ from pyfaidx import Fasta
 
 import logging
 import logging.config
-import os
 
 from tral.paths import config_file, PACKAGE_DIRECTORY
 from tral import configuration
@@ -39,19 +37,11 @@ set_file = "AUP000005640_Chromosome21.fasta"
 set_name = set_file.split(".fasta")[0]
 sequences_file = os.path.join(sequences_path, set_file)
 result_dir = os.path.join(output_path, set_name)
-try:
-    if not os.path.isdir(result_dir):
-        os.makedirs(result_dir)
-except:
-    raise Exception(
-        "Could not create path to result directory: {}".format(
-            os.path.dirname(result_dir)))
 
 ##########################################################################
 ######### Getting sequences
 
 ## obtaining sequences from fasta format
-## Pyfaix Documentation (https://pythonhosted.org/pyfaidx/#installation)
 proteins = Fasta(sequences_file)
 # print(proteins.keys())
 # proteins['sp|P03886|NU1M_HUMAN'][:].seq
@@ -75,7 +65,11 @@ for pyfaidx in proteins:
         number_TR_proteins += 1
         number_TRs += len(denovo_list_remastered.repeats)
 
-    # print("\n***", seq_name, "***")
-    # print("repeats after filtering and clustering:", len(denovo_list_remastered.repeats))
 
-print("Of {} proteins, {} contain a total of {} repeats.".format(number_proteins, number_TR_proteins, number_TRs))
+print("\nOf {} proteins, {} contain a total of {} repeats.".format(number_proteins, number_TR_proteins, number_TRs))
+print("That is {} % of all proteins examined in this run.".format(round((number_TR_proteins / number_proteins * 100), 2)))
+print("\nFiltering criteria has been: \
+        \n --> pvalue < 0.05 \
+        \n --> divergence < 0.1 \
+        \n --> minimun repeat unit count: 2.5 \
+        \n --> maximum repeat unit length: 3\n")

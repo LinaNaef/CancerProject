@@ -1,20 +1,17 @@
-import sys
-
 ##########################################################################
 ### Importing required modules
 ##########################################################################
 
+import sys
 import os
 import pickle
 
-# # modules in this folder
 import get_sequences
 import find_TRs_in_genes
 from pyfaidx import Fasta
 
 import logging
 import logging.config
-import os
 
 from tral.paths import config_file, PACKAGE_DIRECTORY
 from tral import configuration
@@ -39,7 +36,7 @@ output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytic
 
 # Thresholds for filtering
 pvalue_threshold = 0.05
-divergence_threshold = 0.8
+divergence_threshold = 0.1
 n_threshold = 2.5 # minimun repeat unit count
 l_threshold = 3 # maximum repeat unit length
 
@@ -65,6 +62,9 @@ except:
 proteins = Fasta(sequences_file)
 # print(proteins.keys())
 # proteins['sp|P03886|NU1M_HUMAN'][:].seq
+
+all_denovo_repeats = 0
+all_filtered_repeats = 0
 
 for pyfaidx in proteins:
     seq_name = pyfaidx.name.split("|")[1]
@@ -101,6 +101,7 @@ for pyfaidx in proteins:
     ##########################################################################
     ######### Filtering TRs
 
+    all_denovo_repeats += len(denovo_list.repeats) # add number of denovo found repeats
 
     output_pickle_file = os.path.join(result_dir, seq_name + ".pkl")
     output_tsv_file = os.path.join(result_dir, seq_name + ".tsv")
@@ -159,9 +160,13 @@ for pyfaidx in proteins:
 
         # function to save as fasta has to be integrated
 
+    all_filtered_repeats += len(denovo_list_remastered.repeats) # add number of clustered repeats
     print("\n***", seq_name, "***")
     print("denovo repeats:", len(denovo_list.repeats))
     print("repeats after filtering and clustering:", len(denovo_list_remastered.repeats))
 
     for i in range(len(denovo_list_remastered.repeats)):
         print(denovo_list_remastered.repeats[i])
+
+print("\nThere where {} repeats found de novo.".format(all_denovo_repeats))
+print("After filtering and clutering there where only {} repeats left.\n".format(all_filtered_repeats))
