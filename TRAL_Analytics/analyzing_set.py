@@ -28,8 +28,8 @@ score = CONFIG["model"]
 ######### Defining Paths and Parameters
 
 ## AA reference
-working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom/pickles"
-sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom"
+working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference/pickles"
+sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference"
 output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/proteom"
 
 # set_file = "AUP000005640_Mitochondrion.fasta"

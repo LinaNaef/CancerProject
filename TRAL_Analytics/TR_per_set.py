@@ -6,8 +6,8 @@ import sys
 import os
 import pickle
 
-import get_sequences
-import find_TRs_in_genes
+# import get_sequences
+# import find_TRs_in_genes
 from pyfaidx import Fasta
 
 import logging
@@ -30,8 +30,8 @@ score = CONFIG["model"]
 ######### Defining Paths and Parameters
 
 ## AA reference
-working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom/pickles"
-sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom"
+working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference/pickles"
+sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference"
 output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/proteom"
 
 # Thresholds for filtering
@@ -41,7 +41,7 @@ n_threshold = 2.5 # minimun repeat unit count
 l_threshold = 3 # maximum repeat unit length
 
 # set_file = "AUP000005640_Mitochondrion.fasta"
-set_file = "AUP000005640_Chromosome21.fasta"
+set_file = "AUP000005640_Chromosome22.fasta"
 set_name = set_file.split(".fasta")[0]
 sequences_file = os.path.join(sequences_path, set_file)
 result_dir = os.path.join(output_path, set_name)
@@ -169,4 +169,4 @@ for pyfaidx in proteins:
         print(denovo_list_remastered.repeats[i])
 
 print("\nThere where {} repeats found de novo.".format(all_denovo_repeats))
-print("After filtering and clutering there where only {} repeats left.\n".format(all_filtered_repeats))
+print("After filtering and clustering there where only {} repeats left.\n".format(all_filtered_repeats))
