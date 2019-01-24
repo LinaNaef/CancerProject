@@ -107,6 +107,7 @@ for pyfaidx in proteins:
         denovo_list = seq.detect(denovo=True)
         for TR in denovo_list.repeats:
             TR.calculate_pvalues()
+        
         # Saving this sequences as binary files:
         with open(TRs_pkl, 'wb') as f: 
             pickle.dump(denovo_list, f)
