@@ -23,6 +23,8 @@ from tral import configuration
 from tral.sequence import sequence
 from tral.hmm import hmm
 
+import analyzing_functions
+
 logging.config.fileConfig(config_file("logging.ini"))
 log = logging.getLogger('root')
 
@@ -42,15 +44,16 @@ def AACount(text):
 working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference/pickles"
 sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference"
 output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/proteom"
+output_figures = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/output_figures"
 
 if len(sys.argv) > 1:
     chr_nr = sys.argv[1] # check commmand line argument
 else:
-    chr_nr = "2"
+    chr_nr = "4"
     # sys.exit("Please provide the chromosome number as input.")
 
 set_file = "AUP000005640_Chromosome" + chr_nr + ".fasta"
-chr_name = "Chromosome " + chr_nr
+chr_name = "Chromosome" + chr_nr
 set_name = set_file.split(".fasta")[0]
 sequences_file = os.path.join(sequences_path, set_file)
 result_dir = os.path.join(output_path, set_name)
@@ -61,7 +64,6 @@ list_proteins_with_TR = []
 all_AA = ""
 count_dist = {1:{},2:{},3:{}}
 max_unit_count = 20 # expected max count for visualization of unit length, unit count distribution
-
 
 ##########################################################################
 ######### Getting sequences
@@ -107,91 +109,8 @@ for pyfaidx in proteins:
 
             all_AA += denovo_list_remastered.repeats[TR].textD_standard_aa # string with all AA
 
-############ Create txt with Proteins that contain TRs ###############
-
-f = open(file_protein_list, 'w')
-f.write('UniqueIdentifier EntryName NumberTRs\n')
-for protein in list_proteins_with_TR:
-    f.write(' '.join(str(s) for s in protein) + '\n')
-f.close()
-
-############ Create Dictionary with all AA appended ###############
-
-# # Create dict which counts AAs
-# AA_dict = (Counter(all_AA))
-# # remove whitespace and gap
-# AA_dict.pop(' ', None)
-# AA_dict.pop('-', None)
-
-# # add missing AAs
-# AAs = "ACDEFGHIKLMNPQRSTVWY"
-# for AA in AAs:
-#     if AA not in AA_dict:
-#         AA_dict[AA] = 0
-
-# # sort by count
-# sorted_AA_count = sorted(AA_dict.items(), key=lambda x: x[1], reverse=True)
-# AA_names = list(zip(*sorted_AA_count))[0]
-# AA_count = list(zip(*sorted_AA_count))[1]
-# normed_AA_count = [float(i)/sum(AA_count) for i in AA_count]
-
-# # Plot
-# plt.bar(AA_names, normed_AA_count, color='g')
-# # plt.title("Relative apearance of amino acids in tandem repeats in " + chr_name)
-# plt.xlabel('Amino Acid')
-# plt.ylabel('Relative appearance in TRs')
-# plt.show()
-# plt.close()
-
-############ Lenght/Unit Count Distribution ###############
-
-# # get max count to define x-axis
-# max_count = 0
-# for n in range(1,4):
-#     if max(count_dist[n]) > max_count:
-#         max_count = max(count_dist[n])
-
-# # add missing lengts
-# for n in range(1,4):
-#     for l in range(1,max_count+1):
-#         if l not in count_dist[n]:
-#             count_dist[n][l] = 0
-
-# # sort values
-# one_AA = list(sorted(count_dist[1].items()))
-# two_AA = list(sorted(count_dist[2].items()))
-# three_AA = list(sorted(count_dist[3].items()))
-
-# length = list(zip(*one_AA))[0]
-# one_AA_count = list(zip(*one_AA))[1]
-# two_AA_count = list(zip(*two_AA))[1]
-# three_AA_count = list(zip(*three_AA))[1]
-
-# # Three subplots sharing both x/y axes
-# f, (ax) = plt.subplots(3, sharey=True)
-
-# ax[0].set(ylabel='Count', xlabel='Number of repetitive units with 1 Amino Acid.')
-# ax[1].set(ylabel='Count', xlabel='Number of repetitive units with 2 Amino Acids.')
-# ax[2].set(ylabel='Count', xlabel='Number of repetitive units with 3 Amino Acids.')
-
-# ax[0].bar(length, one_AA_count, color='g')
-# # ax[0].set_title('1 Amino Acid')
-# ax[1].bar(length, two_AA_count, color='g')
-# # ax[1].set_title('2 Amino Acids')
-# ax[2].bar(length, three_AA_count, color='g')
-# # ax[2].set_title('3 Amino Acids')
-# f.subplots_adjust(hspace=0.5)
-
-# plt.show()
-
-########### Overview ###############
-
-print('******************',chr_name,'******************')
-print("\nOf {} proteins, {} contain a total of {} repeats.".format(number_proteins, number_TR_proteins, number_TRs))
-print("That is {} % of all proteins in Chromosome {}.".format(round((number_TR_proteins / number_proteins * 100), 2), chr_nr))
-print("\nFiltering criteria has been: \
-        \n --> pvalue < 0.05 \
-        \n --> divergence < 0.1 \
-        \n --> minimun repeat unit count: 2.5 \
-        \n --> maximum repeat unit length: 3\n")
-print('************************************************')
+# Calculate Figures and 
+analyzing_functions.TR_list_txt(list_proteins_with_TR, file_protein_list)
+analyzing_functions.AA_frequency(all_AA, chr_name, output_figures)
+analyzing_functions.l_n_distribution(count_dist, chr_name, output_figures)
+analyzing_functions.overview(chr_name, number_proteins, number_TR_proteins, number_TRs, chr_nr)
