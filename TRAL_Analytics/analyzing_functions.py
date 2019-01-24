@@ -115,10 +115,10 @@ def l_n_distribution(count_dist, chr_name, output_figures):
 ##########################################################################
 ######### Overview
 
-def overview(chr_name, number_proteins, number_TR_proteins, number_TRs, chr_nr):
-    print('******************',chr_name,'******************')
+def overview(chr_name, number_proteins, number_TR_proteins, number_TRs):
+    print('\n******************',chr_name,'******************')
     print("\nOf {} proteins, {} contain a total of {} repeats.".format(number_proteins, number_TR_proteins, number_TRs))
-    print("That is {} % of all proteins in Chromosome {}.".format(round((number_TR_proteins / number_proteins * 100), 2), chr_nr))
+    print("That is {} % of all proteins in {}.".format(round((number_TR_proteins / number_proteins * 100), 2), chr_name))
     print("\nFiltering criteria has been: \
             \n --> pvalue < 0.05 \
             \n --> divergence < 0.1 \

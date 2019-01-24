@@ -43,6 +43,7 @@ def AACount(text):
 ## AA reference
 working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference/pickles"
 sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference"
+# proteins from https://www.uniprot.org/proteomes/UP000005640
 output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/proteom"
 output_figures = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/output_figures"
 
@@ -52,6 +53,11 @@ else:
     chr_nr = "4"
     # sys.exit("Please provide the chromosome number as input.")
 
+list_proteins_with_TR = [] # initialize list to get all proteins containing TRs
+all_AA = "" # initialize string for all AA in TRs
+count_dist = {1:{},2:{},3:{}} # initialize dictionaries for length count
+max_unit_count = 20 # expected max count for visualization of unit length, unit count distribution
+
 set_file = "AUP000005640_Chromosome" + chr_nr + ".fasta"
 chr_name = "Chromosome" + chr_nr
 set_name = set_file.split(".fasta")[0]
@@ -59,11 +65,6 @@ sequences_file = os.path.join(sequences_path, set_file)
 result_dir = os.path.join(output_path, set_name)
 file_protein_list = os.path.join(output_path, set_name + '.txt')
 
-
-list_proteins_with_TR = []
-all_AA = ""
-count_dist = {1:{},2:{},3:{}}
-max_unit_count = 20 # expected max count for visualization of unit length, unit count distribution
 
 ##########################################################################
 ######### Getting sequences
@@ -77,7 +78,6 @@ number_proteins = 0
 number_TR_proteins = 0
 number_TRs = 0
 
-max_length = 41
 
 for pyfaidx in proteins:
     number_proteins += 1
@@ -86,11 +86,12 @@ for pyfaidx in proteins:
     output_pickle_file = os.path.join(result_dir, UniqueIdentifier + ".pkl")
     output_tsv_file = os.path.join(result_dir, UniqueIdentifier + ".tsv")
 
+    # open remastered TR file
     if os.path.exists(output_pickle_file) and os.path.exists(output_tsv_file):
         with open(output_pickle_file,'rb') as f: 
             denovo_list_remastered = pickle.load(f)
 
-    # all proteins that contain TRs
+    # analyze all proteins that contain TRs
     if len(denovo_list_remastered.repeats) > 0:
         protein_tuple = UniqueIdentifier, EntryName, len(denovo_list_remastered.repeats)
         list_proteins_with_TR.append(protein_tuple)
@@ -113,4 +114,4 @@ for pyfaidx in proteins:
 analyzing_functions.TR_list_txt(list_proteins_with_TR, file_protein_list)
 analyzing_functions.AA_frequency(all_AA, chr_name, output_figures)
 analyzing_functions.l_n_distribution(count_dist, chr_name, output_figures)
-analyzing_functions.overview(chr_name, number_proteins, number_TR_proteins, number_TRs, chr_nr)
+analyzing_functions.overview(chr_name, number_proteins, number_TR_proteins, number_TRs)

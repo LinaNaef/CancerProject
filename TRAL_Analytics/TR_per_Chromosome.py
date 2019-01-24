@@ -123,6 +123,7 @@ for pyfaidx in proteins:
     if os.path.exists(output_pickle_file) and os.path.exists(output_tsv_file):
         with open(output_pickle_file,'rb') as f: 
             denovo_list_remastered = pickle.load(f)
+        # denovo_list_remastered.write(output_format = "tsv", file = output_tsv_file)    # write tsv output new
     else:
         # filtering for pvalue
         denovo_list = denovo_list.filter(
