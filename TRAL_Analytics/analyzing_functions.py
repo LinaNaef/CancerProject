@@ -1,4 +1,11 @@
-##########################################################################
+
+# Todo: replace tsv files
+# why is txt file for whole proteome not created properly?
+# controle everything
+# some little output things which show a nice overview over whole proteome
+# might be a lot other things
+
+#########################################################################
 ### Importing required modules
 ##########################################################################
 
