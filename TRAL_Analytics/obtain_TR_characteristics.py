@@ -59,7 +59,7 @@ number_TRs = 0
 
 set_name = "proteome"
 chr_nr = "whole proteome"
-chr_name = "whole proteome"
+chr_name = "whole_proteome"
 
 all_chr = [str(i) for i in range(1,23)] + ["X","Y"] # defining each chromosome
 

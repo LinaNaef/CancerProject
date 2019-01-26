@@ -6,7 +6,7 @@ from obtain_TR_characteristics import *
 #print("The longest TR is:", longest_TR_protein.name)
 #print(longest_TR_protein)
 #print(longest_TR)
-print("The length of the longest TR is:", max_TR)
+print("The length of the longest TR is: {} AAs".format(max_TR))
 # sp|Q9NZW4|DSPP_HUMAN longest TR in a first run, why does it find something like this?
 
 print("There are {} TRs longer than 50 AAs.".format(len(list_long_TR_50)))
@@ -49,7 +49,7 @@ file_cancer_protein_list = os.path.join(output_statistics, 'cancer_proteome_with
 analyzing_functions.TR_list_txt(list_cancer_proteins_with_TRs, file_cancer_protein_list)
 
 #################################################
-######### Calculate Figures and Overview
+######### Calculate Figures and Overview5
 
 analyzing_functions.AA_frequency(all_AA, chr_name, output_statistics)
 analyzing_functions.l_n_distribution(count_dist, chr_name, output_statistics)

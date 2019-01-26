@@ -61,8 +61,9 @@ def AA_frequency(all_AA, chr_name, output_statistics):
 
     # Save Figure
     output_AA_frequency = os.path.join(output_statistics, "aa_frequency" , chr_name + ".png")
-
-    plt.savefig(output_AA_frequency)
+    if os.path.isfile(output_AA_frequency): # overwrite old version
+        os.remove(output_AA_frequency)
+    plt.savefig(output_AA_frequency)    
     plt.close()
 
 ##########################################################################
@@ -96,8 +97,11 @@ def l_n_distribution(count_dist, chr_name, output_statistics):
 
     # only include TRs that have a max n of 25, others are relatively few
     ax[0].set(ylabel='Count', xlabel='Number of repetitive units with 1 amino acid.', xlim = (1,25))
+    ax[0].text(-0.1, 1.1, "A", transform=ax[0].transAxes, size=16, weight='bold')
     ax[1].set(ylabel='Count', xlabel='Number of repetitive units with 2 amino acids.', xlim = (1,25))
+    ax[1].text(-0.1, 1.1, "B", transform=ax[1].transAxes, size=16, weight='bold')
     ax[2].set(ylabel='Count', xlabel='Number of repetitive units with 3 amino acids.', xlim = (1,25))
+    ax[2].text(-0.1, 1.1, "C", transform=ax[2].transAxes, size=16, weight='bold')
 
     ax[0].bar(length, one_AA_count, color='g')
     # ax[0].set_title('1 Amino Acid')
@@ -109,7 +113,8 @@ def l_n_distribution(count_dist, chr_name, output_statistics):
 
     # Save Figure
     output_l_n_distribution = os.path.join(output_statistics, "length_unit_distribution" , chr_name + ".png")
-    
+    if os.path.isfile(output_l_n_distribution): # overwrite old version
+        os.remove(output_l_n_distribution)
     plt.savefig(output_l_n_distribution)
     plt.close()
 
