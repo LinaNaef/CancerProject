@@ -1,10 +1,16 @@
-from collections import Counter
+import numpy
+print(numpy.__version__)
+print(numpy.__path__)
 
-def AACount(text):
-    return Counter(c for c in text if c.isalpha())
 
 
-print(AACount("AAAAAAAAAAATTTTTTDCFSDFSDFE"))
+# from collections import Counter
+
+# def AACount(text):
+#     return Counter(c for c in text if c.isalpha())
+
+
+# print(AACount("AAAAAAAAAAATTTTTTDCFSDFSDFE"))
 
 
 # import os

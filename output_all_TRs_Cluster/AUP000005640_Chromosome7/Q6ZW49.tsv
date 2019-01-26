@@ -1,0 +1,8 @@
+begin	msa_original	l_effective	n_effective	repeat_region_length	divergence	pvalue
+575	Q,Q,Q,Q,Q,Q,Q	1	7.0	7	1e-10	0.0
+542	Q,Q,Q,Q,Q,Q,Q	1	7.0	7	1e-10	0.0
+525	Q,Q,Q,Q,Q,Q,Q,I,Q,Q,Q,Q	1	12.0	12	0.0885620118010376	0.0
+450	Q,Q,Q,Q,Q,Q,Q,Q	1	8.0	8	1e-10	0.0
+428	Q,Q,Q,Q,Q,Q,Q	1	7.0	7	1e-10	0.0
+402	Q,Q,Q,Q,Q,A,Q,Q,Q,Q,Q,Q	1	12.0	12	0.06994628914851075	0.0
+189	E,E,E,E,E,E,E,E,E,E,E,E	1	12.0	12	1e-10	0.0

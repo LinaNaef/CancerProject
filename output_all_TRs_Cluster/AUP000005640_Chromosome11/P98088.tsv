@@ -1,0 +1,5 @@
+begin	msa_original	l_effective	n_effective	repeat_region_length	divergence	pvalue
+4574	TTS--,TTSAP,TTS--,TTS-G	3	4.0	15	0.06445312508710938	0.0
+4550	TTS--,TTSAP,TTS--,TTS-G	3	4.0	15	0.06445312508710938	0.0
+4302	TTS--,TTSAP,TTS--,TTS-G	3	4.0	15	0.06445312508710938	0.0
+5520	P,P,P,P,P,P	1	6.0	6	1e-10	0.0

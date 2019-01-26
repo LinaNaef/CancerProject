@@ -1,5 +1,5 @@
 
-# Todo: replace tsv files
+# Todo: 
 # why is txt file for whole proteome not created properly?
 # controle everything
 # some little output things which show a nice overview over whole proteome
@@ -33,7 +33,7 @@ from tral.hmm import hmm
 
 def TR_list_txt(list_proteins_with_TR,file_protein_list):
     f = open(file_protein_list, 'w')
-    f.write('UniqueIdentifier EntryName NumberTRs\n')
+    f.write('UniqueIdentifier EntryName GeneName NumberTRs\n')
     for protein in list_proteins_with_TR:
         f.write(' '.join(str(s) for s in protein) + '\n')
     f.close()

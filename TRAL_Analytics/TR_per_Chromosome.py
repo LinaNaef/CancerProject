@@ -30,10 +30,13 @@ score = CONFIG["model"]
 ######### Defining Paths and Parameters
 
 ## AA reference
+
+# Private computer paths
 working_dir = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference/pickles"
 sequences_path = "/home/lina/Desktop/TRAL_Masterthesis/references/Uniprot_data/proteom_reference"
 output_path = "/home/lina/SynologyDrive/TRAL_Masterthesis/TRAL_Pipeline_Analytics/test_output/proteom"
 
+## Cluster paths
 # working_dir = "/home/naefpau1/proteome_reference/pickles"
 # sequences_path = "/home/naefpau1/proteome_reference"
 # output_path = "/home/naefpau1/output
@@ -85,8 +88,14 @@ for pyfaidx in proteins:
 
     if os.path.exists(sequence_pkl):
         # Getting back the sequences:
-        with open(sequence_pkl,'rb') as f: # files saved before  
-            seq = pickle.load(f)
+        try: # catch empty files
+            with open(sequence_pkl,'rb') as f: # files saved before  
+                seq = pickle.load(f)
+        except EOFError:
+            seq = sequence.Sequence(seq=str(pyfaidx), name=seq_name) # name is protein identifier
+            # Saving this sequences as binary files:
+            with open(sequence_pkl, 'wb') as f: 
+                pickle.dump(seq, f)    
     else:
         seq = sequence.Sequence(seq=str(pyfaidx), name=seq_name) # name is protein identifier
         # Saving this sequences as binary files:
@@ -101,8 +110,18 @@ for pyfaidx in proteins:
 
     if os.path.exists(TRs_pkl):
         # Getting back the sequences:
-        with open(TRs_pkl,'rb') as f: # files saved before  
-            denovo_list = pickle.load(f)
+        try:
+            with open(TRs_pkl,'rb') as f: # files saved before  
+                denovo_list = pickle.load(f)
+        except EOFError:
+            denovo_list = seq.detect(denovo=True)
+            for TR in denovo_list.repeats:
+                TR.calculate_pvalues()
+            
+            # Saving this sequences as binary files:
+            with open(TRs_pkl, 'wb') as f: 
+                pickle.dump(denovo_list, f)            
+
     else:
         denovo_list = seq.detect(denovo=True)
         for TR in denovo_list.repeats:
@@ -121,9 +140,12 @@ for pyfaidx in proteins:
     output_tsv_file = os.path.join(result_dir, seq_name + ".tsv")
 
     if os.path.exists(output_pickle_file) and os.path.exists(output_tsv_file):
-        with open(output_pickle_file,'rb') as f: 
-            denovo_list_remastered = pickle.load(f)
-        # denovo_list_remastered.write(output_format = "tsv", file = output_tsv_file)    # write tsv output new
+        try:
+            with open(output_pickle_file,'rb') as f: 
+                denovo_list_remastered = pickle.load(f)
+            # denovo_list_remastered.write(output_format = "tsv", file = output_tsv_file)    # write tsv output new
+        except EOFError:
+            pass
     else:
         # filtering for pvalue
         denovo_list = denovo_list.filter(
