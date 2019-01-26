@@ -109,7 +109,7 @@ def l_n_distribution(count_dist, chr_name, output_statistics):
 
     # Save Figure
     output_l_n_distribution = os.path.join(output_statistics, "length_unit_distribution" , chr_name + ".png")
-
+    
     plt.savefig(output_l_n_distribution)
     plt.close()
 
