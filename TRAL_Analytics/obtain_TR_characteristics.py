@@ -66,7 +66,8 @@ all_chr = [str(i) for i in range(1,23)] + ["X","Y"] # defining each chromosome
 pvalue_above_zero = 0
 divergence_above_zero = 0
 max_TR = 0
-list_long_TR = []
+list_long_TR_25 = []
+list_long_TR_50 = []
 EOFError_Count = 0
 
 # from https://www.proteinatlas.org/search/protein_class:COSMIC+somatic+mutations+in+cancer+genes
@@ -161,5 +162,8 @@ for chr_nr in all_chr: # analyze each chromosome
                     longest_TR, longest_TR_protein, max_TR = denovo_list_remastered.repeats[TR], pyfaidx, TR_length
 
                 if TR_length > 50:
-                    list_long_TR.append((denovo_list_remastered.repeats[TR], pyfaidx))
+                    list_long_TR_50.append((denovo_list_remastered.repeats[TR], pyfaidx))
+
+                if TR_length > 25:
+                    list_long_TR_25.append((denovo_list_remastered.repeats[TR], pyfaidx))
 

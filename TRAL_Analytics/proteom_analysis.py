@@ -9,7 +9,8 @@ from obtain_TR_characteristics import *
 print("The length of the longest TR is:", max_TR)
 # sp|Q9NZW4|DSPP_HUMAN longest TR in a first run, why does it find something like this?
 
-print("There are {} TRs longer than 50.".format(len(list_long_TR)))
+print("There are {} TRs longer than 50.".format(len(list_long_TR_50)))
+print("There are {} TRs longer than 25.".format(len(list_long_TR_25)))
 
 # for TR, protein in list_long_TR: # print name of protein + whole protein
 #     print(protein.name,protein)

@@ -1,10 +1,3 @@
-
-# Todo: 
-# why is txt file for whole proteome not created properly?
-# controle everything
-# some little output things which show a nice overview over whole proteome
-# might be a lot other things
-
 #########################################################################
 ### Importing required modules
 ##########################################################################
@@ -41,7 +34,7 @@ def TR_list_txt(list_proteins_with_TR,file_protein_list):
 ##########################################################################
 ######### Create Figure with AA frequency
 
-def AA_frequency(all_AA, chr_name, output_figures):
+def AA_frequency(all_AA, chr_name, output_statistics):
     # Create dict which counts AAs
     AA_dict = (Counter(all_AA))
     # remove whitespace and gap
@@ -67,7 +60,7 @@ def AA_frequency(all_AA, chr_name, output_figures):
     plt.ylabel('Relative frequency in TRs')
 
     # Save Figure
-    output_AA_frequency = os.path.join(output_figures, "aa_frequency" , chr_name + ".png")
+    output_AA_frequency = os.path.join(output_statistics, "aa_frequency" , chr_name + ".png")
 
     plt.savefig(output_AA_frequency)
     plt.close()
@@ -75,7 +68,7 @@ def AA_frequency(all_AA, chr_name, output_figures):
 ##########################################################################
 ######### Lenght/Unit Count Distribution Figure
 
-def l_n_distribution(count_dist, chr_name, output_figures):
+def l_n_distribution(count_dist, chr_name, output_statistics):
     # get max count to define x-axis
     max_count = 0
     for n in range(1,4):
@@ -101,9 +94,10 @@ def l_n_distribution(count_dist, chr_name, output_figures):
     # Three subplots sharing both x/y axes
     f, (ax) = plt.subplots(3, sharey=True)
 
-    ax[0].set(ylabel='Count', xlabel='Number of repetitive units with 1 amino acid.')
-    ax[1].set(ylabel='Count', xlabel='Number of repetitive units with 2 amino acids.')
-    ax[2].set(ylabel='Count', xlabel='Number of repetitive units with 3 amino acids.')
+    # only include TRs that have a max n of 25, others are relatively few
+    ax[0].set(ylabel='Count', xlabel='Number of repetitive units with 1 amino acid.', xlim = (1,25))
+    ax[1].set(ylabel='Count', xlabel='Number of repetitive units with 2 amino acids.', xlim = (1,25))
+    ax[2].set(ylabel='Count', xlabel='Number of repetitive units with 3 amino acids.', xlim = (1,25))
 
     ax[0].bar(length, one_AA_count, color='g')
     # ax[0].set_title('1 Amino Acid')
@@ -114,7 +108,7 @@ def l_n_distribution(count_dist, chr_name, output_figures):
     f.subplots_adjust(hspace=0.5)
 
     # Save Figure
-    output_l_n_distribution = os.path.join(output_figures, "length_unit_distribution" , chr_name + ".png")
+    output_l_n_distribution = os.path.join(output_statistics, "length_unit_distribution" , chr_name + ".png")
 
     plt.savefig(output_l_n_distribution)
     plt.close()
